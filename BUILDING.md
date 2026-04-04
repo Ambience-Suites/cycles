@@ -1,6 +1,8 @@
 Building Cycles
 ===============
 
+Cycles is the rendering and animation component of the Ambience Suites GUI Library. Build output (animation definitions, render configs, and frame state data) is packaged into **Content Data Serial Boxes** for distribution. See [Content_Data_Serial_Boxes.md](Content_Data_Serial_Boxes.md) for the serialization specification.
+
 ## Prerequisites
 
 Ensure the following software is installed and available in the PATH:

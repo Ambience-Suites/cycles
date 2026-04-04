@@ -5,6 +5,22 @@ Cycles is a path tracing renderer focused on interactivity and ease of use, whil
 
 https://www.cycles-renderer.org
 
+## Ambience Suites GUI Library Integration
+
+This repository serves as the **Cycles** rendering and animation component of the Ambience Suites GUI Library ecosystem. Cycles data is packaged and distributed via **Content Data Serial Boxes** — see [Content_Data_Serial_Boxes.md](Content_Data_Serial_Boxes.md) for the full specification.
+
+### Serial Box Mapping
+
+Cycles assets map to Content Data Serial Boxes as follows:
+
+| Source | Box Type | Content Type |
+|--------|----------|--------------|
+| `cycles/animations/*.yaml` | `content` | `animation` |
+| `cycles/render_config.json` | `config` | `style` |
+| Frame state snapshots | `state` | `ui_component` |
+
+Animation cycle definitions produce **Content boxes**, rendering pipeline configurations produce **Config boxes**, and frame state data is captured in **State boxes**. Refer to the [Content Data Serial Boxes Specification](Content_Data_Serial_Boxes.md) for schema details, generation process, and integration guidelines.
+
 ## Building
 
 Cycles can be built as a standalone application or a Hydra render delegate. See [BUILDING.md](BUILDING.md) for instructions.

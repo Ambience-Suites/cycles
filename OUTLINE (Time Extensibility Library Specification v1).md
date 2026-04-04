@@ -134,3 +134,14 @@ ICS calendar files for operational scheduling and event tracking.
 - [SMPTE Time Code Standards](https://www.smpte.org/standards)
 - [Numbermaiden CIA Service Registry](https://github.com/Numbermaiden/Numbermaiden-CIA-Service-Registry)
 - [Business Particle Accelerator](https://github.com/Business-Particle-Accelerator)
+
+---
+
+## Ambience Suites GUI Library
+
+This specification operates within the broader **Ambience Suites GUI Library** ecosystem. Rendering and animation data produced by the Cycles component is serialized using **Content Data Serial Boxes** for distribution across GUI contexts.
+
+See [Content_Data_Serial_Boxes.md](Content_Data_Serial_Boxes.md) for:
+- Box format schema (Content, State, Config types)
+- Integration mappings for the Cycles repository
+- Generation, validation, and lifecycle process
