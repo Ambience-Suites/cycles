@@ -562,7 +562,7 @@ Certified reports should include:
 All signal-producing assets and derivative outputs must be tracked with bibliographic metadata to support legal, security, and forensic controls.
 
 ### 21.1 Required Bibliographic Fields
-- asset identifier (immutable; required format: `urn:uuid:{uuidv4}`, e.g., `urn:uuid:123e4567-e89b-12d3-a456-426614174000`)
+- asset identifier (immutable; required format: `urn:uuid:{uuidv4}`, e.g., `urn:uuid:550e8400-e29b-41d4-a716-446655440000`)
 - source/origin reference
 - owner/custodian
 - creation and revision timestamps
