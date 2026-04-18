@@ -529,6 +529,7 @@ A deployment is not paywall-ready unless:
 3. access logs are reproducible and exportable for compliance review.
 
 For exceptional cases where infrastructure constraints prevent the default, a temporary maximum of up to 5 minutes may be used only with explicit compliance approval.
+Systems using this exception remain paywall-ready only while the approved exception is active, documented, time-bounded, and tracked in certification artifacts.
 
 ---
 
@@ -596,7 +597,8 @@ TV/EV systems operating under paywall and licensing policies must preserve evide
 
 ### 22.3 Minimum Forensic Retention
 - Retain core access, policy, and distribution records for a documented legal retention period approved by compliance.
-- Minimum retention baseline is 12 months.
+- Minimum retention baseline is 12 months where legally permitted.
+- Where applicable law sets a shorter maximum retention period, follow that legal requirement and document the variance.
 - Apply stricter retention where legal or regulatory obligations require it.
 - Certification artifacts must:
   - declare retention duration,
