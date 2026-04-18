@@ -12,23 +12,23 @@ Ambience Suites Renderer data is packaged and distributed via **Content Data Ser
   +-------------------------+     +-------------------------+
   |      HOST  NODE         |     |     CLIENT  NODE        |
   |                         |     |                         |
-  |  +---------------------------+|  +-----------------+    |
-  |  | Ambience Suites Renderer  ||  |  Display Layer  |    |
-  |  | (path tracing)            |<->| (consume boxes) |    |
-  |  +---------------------------+|  +--------+--------+    |
-  |           |                   |           |              |
-  |  +--------v--------+          |  +--------v--------+     |
-  |  | Broadcast Engine|          |  | Analysis Client |     |
-  |  | (frame pipeline)|          |  | (tech + fund.)  |     |
-  |  +--------+--------+          |  +--------+--------+     |
-  |           |                   |           |              |
-  |  +--------v--------+          |  +--------v--------+     |
-  |  |   1 9 7 0 a i   |          |  | Portfolio Layer |     |
-  |  | (AI / signals)  |          |  | (state tracking)|     |
-  |  +-----------------+          |  +-----------------+     |
-  +----------+--------------------+-------------+------------+
-             |                                  |
-             +-----------------+----------------+
+  |  +------------------+   |     |  +-----------------+    |
+  |  | Ambience Suites  |   |     |  |  Display Layer  |    |
+  |  | Renderer         |<------->|  | (consume boxes) |    |
+  |  +--------+---------+   |     |  +--------+--------+    |
+  |           |             |     |           |             |
+  |  +--------v--------+    |     |  +--------v--------+    |
+  |  | Broadcast Engine|    |     |  | Analysis Client |    |
+  |  | (frame pipeline)|    |     |  | (tech + fund.)  |    |
+  |  +--------+--------+    |     |  +--------+--------+    |
+  |           |             |     |           |             |
+  |  +--------v--------+    |     |  +--------v--------+    |
+  |  |   1 9 7 0 a i   |    |     |  | Portfolio Layer |    |
+  |  | (AI / signals)  |    |     |  | (state tracking)|    |
+  |  +-----------------+    |     |  +-----------------+    |
+  +----------+--------------+     +------------+------------+
+             |                                 |
+             +-----------------+---------------+
                                |
              +-----------------v-----------------+
              |   Content Data Serial Boxes        |
@@ -187,7 +187,7 @@ print(result.report())
 
 | Dependency | Used For | Source |
 |---|---|---|
-| pyyaml | Serial box generator | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
+| PyYAML | Serial box generator | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
 | pyflakes | Python linting | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
 | pytest | TV/EV unit tests | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
 
