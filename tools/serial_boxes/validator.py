@@ -34,6 +34,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from tools.serial_boxes.schema import (
     VALID_BOX_TYPES,
     VALID_CONTENT_TYPES,
+    VALID_PERMISSION_RULESETS,
     VALID_COMPRESSION,
     _UUID4_RE,
     _SHA256_RE,
@@ -83,6 +84,19 @@ def load_box_file(file_path: str) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Validation
 # ---------------------------------------------------------------------------
+
+
+def _payload_checksum(payload: Dict[str, Any], include_permission_ruleset: bool = True) -> str:
+    payload_copy: Dict[str, Any] = {
+        "content_type": payload.get("content_type"),
+        "data": payload.get("data"),
+        "dependencies": payload.get("dependencies", []),
+    }
+    if include_permission_ruleset and "permission_ruleset" in payload:
+        payload_copy["permission_ruleset"] = payload.get("permission_ruleset")
+    return hashlib.sha256(
+        json.dumps(payload_copy, sort_keys=True, ensure_ascii=True).encode()
+    ).hexdigest()
 
 
 def validate_box_dict(box: Dict[str, Any]) -> List[str]:
@@ -139,23 +153,42 @@ def validate_box_dict(box: Dict[str, Any]) -> List[str]:
                 f"payload.content_type {payload.get('content_type')!r} "
                 f"must be one of {VALID_CONTENT_TYPES}"
             )
+        ruleset = payload.get("permission_ruleset", "default")
+        if ruleset not in VALID_PERMISSION_RULESETS:
+            errors.append(
+                f"payload.permission_ruleset {ruleset!r} "
+                f"must be one of {tuple(VALID_PERMISSION_RULESETS)}"
+            )
+        elif payload.get("content_type") not in VALID_PERMISSION_RULESETS[ruleset]:
+            errors.append(
+                f"payload.content_type {payload.get('content_type')!r} "
+                f"is blocked by permission ruleset {ruleset!r}"
+            )
         if not isinstance(payload.get("data"), dict):
             errors.append("payload.data must be a dict")
 
         # Checksum cross-check
-        payload_copy = {
-            "content_type": payload.get("content_type"),
-            "data": payload.get("data"),
-            "dependencies": payload.get("dependencies", []),
-        }
-        actual_checksum = hashlib.sha256(
-            json.dumps(payload_copy, sort_keys=True, ensure_ascii=True).encode()
-        ).hexdigest()
+        actual_checksum_with_ruleset = _payload_checksum(payload, include_permission_ruleset=True)
+        actual_checksum_without_ruleset = _payload_checksum(payload, include_permission_ruleset=False)
         declared_checksum = meta.get("checksum", "") if isinstance(meta, dict) else ""
-        if actual_checksum != declared_checksum:
+        if ruleset == "default":
+            # Backwards compatibility:
+            # Older boxes did not include permission_ruleset in payload checksums.
+            checksum_matches = declared_checksum in {
+                actual_checksum_with_ruleset,
+                actual_checksum_without_ruleset,
+            }
+            checksum_report = (
+                f"{actual_checksum_with_ruleset} (with permission_ruleset), "
+                f"{actual_checksum_without_ruleset} (without permission_ruleset)"
+            )
+        else:
+            checksum_matches = actual_checksum_with_ruleset == declared_checksum
+            checksum_report = actual_checksum_with_ruleset
+        if not checksum_matches:
             errors.append(
                 f"checksum mismatch: declared={declared_checksum!r}, "
-                f"computed={actual_checksum!r}"
+                f"computed={checksum_report!r}"
             )
 
     return errors

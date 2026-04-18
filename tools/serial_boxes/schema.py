@@ -30,6 +30,11 @@ from typing import Any, Dict, List, Optional
 
 VALID_BOX_TYPES = ("content", "state", "config")
 VALID_CONTENT_TYPES = ("ui_component", "narrative", "style", "layout", "animation")
+VALID_PERMISSION_RULESETS = {
+    "default": VALID_CONTENT_TYPES,
+    "billfold_primary_uiux_llm_slm": VALID_CONTENT_TYPES,
+    "datos_novelas_prompt_extension": ("ui_component", "layout", "narrative"),
+}
 VALID_COMPRESSION = ("none", "gzip", "brotli")
 BOX_FORMAT_VERSION = "1.0.0"
 
@@ -107,12 +112,23 @@ class BoxPayload:
     content_type: str
     data: Dict[str, Any]
     dependencies: List[BoxDependency] = field(default_factory=list)
+    permission_ruleset: str = "default"
 
     def validate(self) -> List[str]:
         errors: List[str] = []
         if self.content_type not in VALID_CONTENT_TYPES:
             errors.append(
                 f"payload.content_type {self.content_type!r} must be one of {VALID_CONTENT_TYPES}"
+            )
+        if self.permission_ruleset not in VALID_PERMISSION_RULESETS:
+            errors.append(
+                f"payload.permission_ruleset {self.permission_ruleset!r} "
+                f"must be one of {tuple(VALID_PERMISSION_RULESETS)}"
+            )
+        elif self.content_type not in VALID_PERMISSION_RULESETS[self.permission_ruleset]:
+            errors.append(
+                f"payload.content_type {self.content_type!r} is blocked by "
+                f"permission ruleset {self.permission_ruleset!r}"
             )
         if not isinstance(self.data, dict):
             errors.append("payload.data must be a dict")
@@ -121,12 +137,17 @@ class BoxPayload:
         return errors
 
     def checksum(self) -> str:
-        """Compute the SHA-256 checksum of this payload."""
+        """
+        Compute the SHA-256 checksum of this payload.
+
+        Note: ``permission_ruleset`` is serialized only when not ``"default"``,
+        so legacy payloads and default-ruleset payloads keep stable checksums.
+        """
         serialised = json.dumps(self.as_dict(), sort_keys=True, ensure_ascii=True)
         return hashlib.sha256(serialised.encode()).hexdigest()
 
     def as_dict(self) -> Dict[str, Any]:
-        return {
+        payload: Dict[str, Any] = {
             "content_type": self.content_type,
             "data": self.data,
             "dependencies": [
@@ -139,6 +160,9 @@ class BoxPayload:
                 for d in self.dependencies
             ],
         }
+        if self.permission_ruleset != "default":
+            payload["permission_ruleset"] = self.permission_ruleset
+        return payload
 
 
 # ---------------------------------------------------------------------------
@@ -275,11 +299,13 @@ def _make_box(
     tags: Optional[List[str]] = None,
     compression: str = "none",
     dependencies: Optional[List[BoxDependency]] = None,
+    permission_ruleset: str = "default",
 ) -> SerialBox:
     payload = BoxPayload(
         content_type=content_type,
         data=data,
         dependencies=dependencies or [],
+        permission_ruleset=permission_ruleset,
     )
     checksum = payload.checksum()
     metadata = BoxMetadata(

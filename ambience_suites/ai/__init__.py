@@ -7,7 +7,13 @@ Provides real-time and batch technical / fundamental analysis engines that
 drive broadcast-grade production rendering decisions.
 """
 
-from ambience_suites.ai.engine import AI1970Engine
+from ambience_suites.ai.engine import AI1970Engine, EngineConfig, PromptFeature
 from ambience_suites.ai.analysis import TechnicalAnalysis, FundamentalAnalysis
 
-__all__ = ["AI1970Engine", "TechnicalAnalysis", "FundamentalAnalysis"]
+__all__ = [
+    "AI1970Engine",
+    "EngineConfig",
+    "PromptFeature",
+    "TechnicalAnalysis",
+    "FundamentalAnalysis",
+]

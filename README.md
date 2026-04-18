@@ -112,6 +112,10 @@ python -m tools.serial_boxes.validator --boxes-dir ./serial_boxes --strict
 
 **Fundamental factors:** P/E ratio · EPS growth · Revenue growth · Debt-to-equity
 
+**Prompt feature stack (UI/UX LLM/SLM):**
+- **Primary:** Billfold Technologies Ambience Suites
+- **Additional 1970ai feature:** `Demonstock-Cinematic/Datos-Novelas-Technologies`
+
 ```python
 from ambience_suites.ai.engine import AI1970Engine
 from ambience_suites.ai.analysis import TechnicalAnalysis, FundamentalAnalysis
@@ -156,6 +160,17 @@ result = scorer.score(
 )
 print(result.report())
 ```
+
+### [S1.6] Permission Technology Rulesets (Content-Type Filtering)
+
+Serial Box payloads now support a `permission_ruleset` that gates allowed
+`content_type` values at schema-validation time.
+
+Available rulesets:
+
+- `default` (all standard content types)
+- `billfold_primary_uiux_llm_slm`
+- `datos_novelas_prompt_extension`
 
 ## [S2] Dependency Directory
 

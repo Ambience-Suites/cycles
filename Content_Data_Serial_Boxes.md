@@ -80,6 +80,10 @@ Content Data Serial Boxes are the fundamental data packaging mechanism for the A
           "enum": ["ui_component", "narrative", "style", "layout", "animation"],
           "description": "Specific type of content in the payload"
         },
+        "permission_ruleset": {
+          "type": "string",
+          "description": "Content-type permission policy applied during validation"
+        },
         "data": {
           "type": "object",
           "description": "The actual serialized content"

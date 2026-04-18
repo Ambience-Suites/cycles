@@ -64,6 +64,38 @@ class AnalysisSignal:
 
 
 # ---------------------------------------------------------------------------
+# Prompt feature configuration
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class PromptFeature:
+    """
+    1970ai prompt feature descriptor.
+
+    A prompt feature describes one prompt/context source available to the
+    engine's UI/UX LLM/SLM orchestration layer.
+    """
+
+    name: str
+    source_repository: str
+    prompt_role: str
+    primary: bool = False
+    enabled: bool = True
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "source_repository": self.source_repository,
+            "prompt_role": self.prompt_role,
+            "primary": self.primary,
+            "enabled": self.enabled,
+            "metadata": self.metadata,
+        }
+
+
+# ---------------------------------------------------------------------------
 # Engine configuration
 # ---------------------------------------------------------------------------
 
@@ -79,6 +111,31 @@ class EngineConfig:
     fundamental_enabled: bool = True
     composite_enabled: bool = True
     signal_history_size: int = 1000
+    prompt_features: List[PromptFeature] = field(
+        default_factory=lambda: [
+            PromptFeature(
+                name="billfold-technologies-ambience-suites",
+                source_repository="Ambience-Suites/Ambience-Suites-Renderer",
+                prompt_role="primary-ui-ux-llm-slm",
+                primary=True,
+                metadata={"vendor": "Billfold Technologies"},
+            ),
+            PromptFeature(
+                name="datos-novelas-technologies",
+                source_repository="Demonstock-Cinematic/Datos-Novelas-Technologies",
+                prompt_role="additional-1970ai-prompt-feature",
+                primary=False,
+            ),
+        ]
+    )
+
+    def __post_init__(self) -> None:
+        primary_count = sum(1 for feature in self.prompt_features if feature.primary)
+        if primary_count > 1:
+            raise ValueError(
+                "EngineConfig.prompt_features supports only one primary feature, "
+                f"found {primary_count}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -187,6 +244,8 @@ class AI1970Engine:
 
     def status(self) -> Dict[str, Any]:
         """Return a status dict for monitoring / Serial Box embedding."""
+        active_prompt_features = self.active_prompt_features()
+        primary_feature = next((f for f in active_prompt_features if f.primary), None)
         return {
             "engine": self.ENGINE_NAME,
             "version": self.ENGINE_VERSION,
@@ -194,10 +253,20 @@ class AI1970Engine:
             "signal_count": len(self._signal_history),
             "technical_enabled": self.config.technical_enabled,
             "fundamental_enabled": self.config.fundamental_enabled,
+            "prompt_features": [f.as_dict() for f in active_prompt_features],
+            "primary_prompt_feature": primary_feature.name if primary_feature else None,
         }
 
     def __repr__(self) -> str:
         return (
             f"AI1970Engine(symbols={self.config.symbols}, "
             f"signals={len(self._signal_history)})"
+        )
+
+    def active_prompt_features(self) -> List[PromptFeature]:
+        """Return enabled prompt features with the primary feature first."""
+        features = [feature for feature in self.config.prompt_features if feature.enabled]
+        return sorted(
+            features,
+            key=lambda feature: (0 if feature.primary else 1, feature.name),
         )
