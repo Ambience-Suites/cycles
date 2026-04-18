@@ -562,7 +562,7 @@ Certified reports should include:
 All signal-producing assets and derivative outputs must be tracked with bibliographic metadata to support legal, security, and forensic controls.
 
 ### 21.1 Required Bibliographic Fields
-- asset identifier (immutable; either plain UUIDv4 or `urn:uuid:<UUIDv4>` format)
+- asset identifier (immutable; required format: `urn:uuid:<UUIDv4>`)
 - source/origin reference
 - owner/custodian
 - creation and revision timestamps
@@ -595,7 +595,7 @@ TV/EV systems operating under paywall and licensing policies must preserve evide
   - over what interval and at what volume
 
 ### 22.3 Minimum Forensic Retention
-- Retain core access, policy, and distribution records for a documented legal retention period approved by compliance.
+- Retain core access, policy, and distribution records for a documented legal retention period approved by compliance (minimum baseline: 12 months unless stricter legal/regulatory obligations apply).
 - Certification artifacts must:
   - declare retention duration,
   - declare jurisdiction basis, and
