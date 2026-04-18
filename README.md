@@ -21,6 +21,8 @@ Cycles assets map to Content Data Serial Boxes as follows:
 
 Animation cycle definitions produce **Content boxes**, rendering pipeline configurations produce **Config boxes**, and frame state data is captured in **State boxes**. Refer to the [Content Data Serial Boxes Specification](Content_Data_Serial_Boxes.md) for schema details, generation process, and integration guidelines.
 
+For trade engine performance grading and Beamology dashboard plotting guidance, see [TV-EV Specification](TV-EV%20Specification.md).
+
 ## Building
 
 Cycles can be built as a standalone application or a Hydra render delegate. See [BUILDING.md](BUILDING.md) for instructions.

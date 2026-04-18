@@ -471,3 +471,30 @@ If you want, I can also turn this into:
 1. a **formal standards-style document**,  
 2. a **one-page grading table**, or  
 3. an **Excel-ready scoring model with formulas**.
+
+---
+
+## 18. Beamology Trade Engine — TradingView Plot Visuals Profile
+
+For Beamology Trade Engine dashboards implemented in TradingView Pine Script, use TradingView plot visuals guidance:
+
+- https://www.tradingview.com/pine-script-docs/visuals/overview/#plot-visuals
+
+### 18.1 Required Visual Mapping
+- Plot `TV_observed` as a line series over time.
+- Plot `EV_observed` (weighted latency) as a line series over time.
+- Plot `TVEV_score` as a primary composite line series.
+- Plot grade gates (`70`, `80`, `90`) as horizontal reference series.
+
+### 18.2 Recommended Styling Conventions
+- Use consistent color semantics:
+  - throughput metrics (TV) in cool colors
+  - latency metrics (EV) in warm colors
+  - composite score in neutral/high-contrast color
+- Use separate scales when mixing latency and score series.
+- Prefer clear titles and legend labels matching this specification field names.
+
+### 18.3 Compliance Notes for Plot-Based Reporting
+- Visuals are reporting outputs only and do not replace raw metric capture.
+- Every plotted series must map to values produced by Sections 3–16.
+- Certification reports must retain the underlying numeric outputs even when charts are used as the primary presentation layer.
