@@ -525,10 +525,10 @@ Beamology-enabled distributions that expose TV/EV score outputs, telemetry chann
 ### 19.3 Certification Gate
 A deployment is not paywall-ready unless:
 1. authorization checks are validated under load,
-2. entitlement revocation takes effect within the declared control window (default maximum: 5 minutes), and
+2. entitlement revocation takes effect within the declared control window (default maximum: 60 seconds), and
 3. access logs are reproducible and exportable for compliance review.
 
-For critical-security or high-fraud-risk tiers, the recommended revocation window is 60 seconds or less.
+For exceptional cases where infrastructure constraints prevent the default, a temporary maximum of up to 5 minutes may be used only with explicit compliance approval.
 
 ---
 
@@ -557,12 +557,12 @@ Certified reports should include:
 
 ---
 
-## 21. Asset Bibliographics for Compliance and Permission Technology
+## 21. Asset Bibliographic Metadata for Compliance and Permission Technology
 
 All signal-producing assets and derivative outputs must be tracked with bibliographic metadata to support legal, security, and forensic controls.
 
 ### 21.1 Required Bibliographic Fields
-- asset identifier (immutable; required format: `urn:uuid:{uuidv4}`, e.g., `urn:uuid:550e8400-e29b-41d4-a716-446655440000`)
+- asset identifier (immutable; required format: `urn:uuid:{uuidv4}`, e.g., `urn:uuid:f47ac10b-58cc-4372-a567-0e02b2c3d479`)
 - source/origin reference
 - owner/custodian
 - creation and revision timestamps
