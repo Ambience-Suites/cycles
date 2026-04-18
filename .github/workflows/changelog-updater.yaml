@@ -1,0 +1,140 @@
+name: Changelog Auto-Updater
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to append to CHANGELOG.md"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update-changelog:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve PR metadata
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isDispatch = context.eventName === "workflow_dispatch";
+            const prNumber = isDispatch
+              ? Number(core.getInput("pr_number"))
+              : context.payload.pull_request.number;
+
+            const {owner, repo} = context.repo;
+            const {data: pr} = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: prNumber,
+            });
+
+            const labels = (pr.labels || []).map((l) => String(l.name).toLowerCase());
+            if (labels.includes("skip-changelog") || labels.includes("no-changelog")) {
+              core.info(`Skipping changelog update for #${prNumber} due to label.`);
+              core.setOutput("skip", "true");
+              return;
+            }
+
+            const labelCategoryMap = [
+              {labels: ["security"], category: "Security"},
+              {labels: ["bug", "bugfix", "fix"], category: "Fixed"},
+              {labels: ["feature", "enhancement", "feat"], category: "Added"},
+              {labels: ["performance", "perf"], category: "Performance"},
+              {labels: ["refactor"], category: "Changed"},
+              {labels: ["docs", "documentation"], category: "Documentation"},
+              {labels: ["test", "tests"], category: "Testing"},
+            ];
+
+            let category = "Changed";
+            for (const mapping of labelCategoryMap) {
+              if (mapping.labels.some((name) => labels.includes(name))) {
+                category = mapping.category;
+                break;
+              }
+            }
+
+            core.setOutput("skip", "false");
+            core.setOutput("number", String(pr.number));
+            core.setOutput("title", pr.title);
+            core.setOutput("url", pr.html_url);
+            core.setOutput("author", pr.user?.login || "unknown");
+            core.setOutput("category", category);
+            core.setOutput("date", (pr.merged_at || new Date().toISOString()).slice(0, 10));
+
+      - name: Update CHANGELOG.md
+        if: steps.pr.outputs.skip != 'true'
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_TITLE: ${{ steps.pr.outputs.title }}
+          PR_URL: ${{ steps.pr.outputs.url }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          PR_CATEGORY: ${{ steps.pr.outputs.category }}
+          PR_DATE: ${{ steps.pr.outputs.date }}
+        run: |
+          python - <<'PY'
+          import pathlib
+          import re
+
+          path = pathlib.Path("CHANGELOG.md")
+          if path.exists():
+            text = path.read_text(encoding="utf-8")
+          else:
+            text = "# Changelog\n\nAll notable changes to Ambience Suites Renderer are documented in this file.\n\n## [Unreleased]\n"
+
+          pr_number = pathlib.os.environ["PR_NUMBER"]
+          pr_title = pathlib.os.environ["PR_TITLE"].strip()
+          pr_url = pathlib.os.environ["PR_URL"].strip()
+          pr_author = pathlib.os.environ["PR_AUTHOR"].strip()
+          pr_category = pathlib.os.environ["PR_CATEGORY"].strip()
+          pr_date = pathlib.os.environ["PR_DATE"].strip()
+
+          token = f"[#{pr_number}]("
+          if token in text:
+            print(f"CHANGELOG already includes PR #{pr_number}; skipping.")
+            raise SystemExit(0)
+
+          if "## [Unreleased]" not in text:
+            if not text.endswith("\n"):
+              text += "\n"
+            text += "\n## [Unreleased]\n"
+
+          unreleased_match = re.search(r"^## \[Unreleased\]\s*$", text, flags=re.MULTILINE)
+          if not unreleased_match:
+            raise RuntimeError("Could not locate [Unreleased] section in CHANGELOG.md")
+
+          section_start = unreleased_match.end()
+          next_section_match = re.search(r"^## \[[^\]]+\]\s*$", text[section_start:], flags=re.MULTILINE)
+          section_end = section_start + next_section_match.start() if next_section_match else len(text)
+
+          section = text[section_start:section_end]
+          date_header = f"### {pr_date}"
+          entry = f"- {pr_category}: {pr_title} ([#{pr_number}]({pr_url})) by @{pr_author}\n"
+
+          if date_header in section:
+            section = section.replace(date_header, f"{date_header}\n\n{entry}", 1)
+          else:
+            section = f"\n{date_header}\n\n{entry}{section.lstrip(chr(10))}"
+
+          updated = text[:section_start] + section + text[section_end:]
+          path.write_text(updated, encoding="utf-8")
+          print(f"Appended PR #{pr_number} to CHANGELOG.md")
+          PY
+
+      - name: Commit and push changelog
+        if: steps.pr.outputs.skip != 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(changelog): update from PR #${{ steps.pr.outputs.number }}"
+          file_pattern: CHANGELOG.md

@@ -1,49 +1,21 @@
-<!--
-  Ambience Suites — Cycles Broadcast Production Platform
-  Powered by 1970ai
--->
+# Ambience Suites Renderer
 
-```
-+============================================================================+
-|                                                                            |
-|    ___  __  __ ___ ___ ___ _  _  ___ ___   ___ _   _ ___ _____ ___ ___   |
-|   / _ \|  \/  | _ )_ _| __| \| |/ __| __| / __| | | |_ _|_   _| __/ __|  |
-|  | (_) | |\/| | _ \| || _|| .` | (__| _|  \__ \ |_| || |  | | | _|\__ \  |
-|   \__,_|_|  |_|___/___|___|_|\_|\___|___| |___/\___/|___| |_| |___|___/  |
-|                                                                            |
-|          B R O A D C A S T   P R O D U C T I O N   P L A T F O R M       |
-|                       P o w e r e d   b y   1 9 7 0 a i                   |
-|                                                                            |
-|   * Broadcast-Grade Path Tracing        * Technical Analysis               |
-|   * Fundamental Analysis                * Host / Client Architecture       |
-|   * Content Data Serial Boxes           * TV/EV Performance Grading        |
-|                                                                            |
-+============================================================================+
-```
+## [S1] Ambience Suites GUI Library Integration
 
-Cycles Renderer
-===============
+This repository is the **Ambience Suites Renderer** rendering and animation component of the **Ambience Suites GUI Library** ecosystem — a broadcast-grade production platform for rendering technical and fundamental analysis visualisations powered by **1970ai**.
 
-Cycles is a path tracing renderer focused on interactivity and ease of use, while supporting many production features.
+Ambience Suites Renderer data is packaged and distributed via **Content Data Serial Boxes** (Python-native format). See [Content_Data_Serial_Boxes.md](Content_Data_Serial_Boxes.md) for the full specification.
 
-https://www.cycles-renderer.org
-
-## Ambience Suites GUI Library Integration
-
-This repository is the **Cycles** rendering and animation component of the **Ambience Suites GUI Library** ecosystem — a broadcast-grade production platform for rendering technical and fundamental analysis visualisations powered by **1970ai**.
-
-Cycles data is packaged and distributed via **Content Data Serial Boxes** (Python-native format).  See [Content_Data_Serial_Boxes.md](Content_Data_Serial_Boxes.md) for the full specification.
-
-### Host / Client Architecture
+### [S1.1] Host / Client Architecture
 
 ```
   +-------------------------+     +-------------------------+
   |      HOST  NODE         |     |     CLIENT  NODE        |
   |                         |     |                         |
-  |  +-----------------+    |     |  +-----------------+    |
-  |  | Cycles Renderer |    |     |  |  Display Layer  |    |
-  |  | (path tracing)  |<------->|  | (consume boxes) |    |
-  |  +--------+--------+    |     |  +--------+--------+    |
+  |  +------------------+   |     |  +-----------------+    |
+  |  | Ambience Suites  |   |     |  |  Display Layer  |    |
+  |  | Renderer         |<------->|  | (consume boxes) |    |
+  |  +--------+---------+   |     |  +--------+--------+    |
   |           |             |     |           |             |
   |  +--------v--------+    |     |  +--------v--------+    |
   |  | Broadcast Engine|    |     |  | Analysis Client |    |
@@ -66,7 +38,7 @@ Cycles data is packaged and distributed via **Content Data Serial Boxes** (Pytho
              +-----------------------------------+
 ```
 
-### Ambience Suites Folder Structure
+### [S1.2] Ambience Suites Folder Structure
 
 ```
 ambience_suites/          Python package — host/client/AI components
@@ -98,9 +70,9 @@ render_config.py          Render config expressed in Python (not JSON)
 CMakePresets.json         Modern CMake build presets
 ```
 
-### Serial Box Mapping
+### [S1.3] Serial Box Mapping
 
-Cycles assets map to Content Data Serial Boxes as follows:
+Ambience Suites Renderer assets map to Content Data Serial Boxes as follows:
 
 | Source | Box Type | Content Type |
 |--------|----------|--------------|
@@ -123,7 +95,7 @@ Validate boxes:
 python -m tools.serial_boxes.validator --boxes-dir ./serial_boxes --strict
 ```
 
-### 1970ai — AI Component
+### [S1.4] 1970ai — AI Component
 
 ```
   +-------------------------------+
@@ -134,8 +106,7 @@ python -m tools.serial_boxes.validator --boxes-dir ./serial_boxes --strict
   +-------------------------------+
 ```
 
-**1970ai** is the official AI component of Ambience Suites.  It drives
-broadcast-grade rendering decisions through real-time market signals:
+**1970ai** is the official AI component of Ambience Suites. It drives broadcast-grade rendering decisions through real-time market signals:
 
 **Technical indicators:** RSI · MACD · Bollinger Bands · VWAP · EMA crossover
 
@@ -157,7 +128,7 @@ fa = FundamentalAnalysis(engine)
 fa.evaluate("AAPL", pe_ratio=28.5, eps_growth=0.12, revenue_growth=0.08)
 ```
 
-### TV/EV Performance Grading
+### [S1.5] TV/EV Performance Grading
 
 For trade engine performance grading and Beamology dashboard plotting guidance, see [TV-EV Specification](TV-EV%20Specification.md).
 
@@ -186,9 +157,43 @@ result = scorer.score(
 print(result.report())
 ```
 
-## Building
+## [S2] Dependency Directory
 
-Cycles can be built as a standalone application or a Hydra render delegate. See [BUILDING.md](BUILDING.md) for instructions.
+### [S2.1] Core Build Dependencies
+
+| Dependency | Type | Source |
+|---|---|---|
+| OpenImageIO | Required | [BUILDING.md](BUILDING.md) |
+| TBB | Required | [BUILDING.md](BUILDING.md) |
+| Alembic | Optional | [BUILDING.md](BUILDING.md) |
+| Embree | Optional | [BUILDING.md](BUILDING.md) |
+| OpenColorIO | Optional | [BUILDING.md](BUILDING.md) |
+| OpenVDB / NanoVDB | Optional | [BUILDING.md](BUILDING.md) |
+| OpenShadingLanguage | Optional | [BUILDING.md](BUILDING.md) |
+| OpenImageDenoise | Optional | [BUILDING.md](BUILDING.md) |
+| USD | Optional | [BUILDING.md](BUILDING.md) |
+
+### [S2.2] Runtime / Platform Dependencies
+
+| Dependency | Type | Source |
+|---|---|---|
+| OpenGL | GUI | [BUILDING.md](BUILDING.md) |
+| GLEW | GUI | [BUILDING.md](BUILDING.md) |
+| SDL | GUI | [BUILDING.md](BUILDING.md) |
+| CUDA Toolkit 11+ | GPU (NVIDIA) | [BUILDING.md](BUILDING.md) |
+| OptiX 7.3+ SDK | GPU (NVIDIA) | [BUILDING.md](BUILDING.md) |
+
+### [S2.3] Python Tooling Dependencies
+
+| Dependency | Used For | Source |
+|---|---|---|
+| PyYAML | Serial box generator | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
+| pyflakes | Python linting | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
+| pytest | TV/EV unit tests | [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) |
+
+## [S3] Building
+
+Ambience Suites Renderer can be built as a standalone application or a Hydra render delegate. See [BUILDING.md](BUILDING.md) for instructions.
 
 CMake presets are available for common configurations:
 
@@ -200,19 +205,16 @@ cmake --preset tests     # release + GTest suite
 cmake --preset native    # native CPU only (development)
 ```
 
-## Examples
+## [S4] Examples
 
 The repository contains example XML scenes which can be used for testing.
 
 ```bash
-./cycles examples/scene_monkey.xml
-./cycles --samples 100 --output ./image.png examples/scene_monkey.xml
-./cycles --shadingsys osl examples/scene_osl_stripes.xml
+./install/ambience-suites-renderer examples/scene_monkey.xml
+./install/ambience-suites-renderer --samples 100 --output ./image.png examples/scene_monkey.xml
+./install/ambience-suites-renderer --shadingsys osl examples/scene_osl_stripes.xml
 ```
 
-## Contact
+## [S5] Contact
 
-For help building or running Cycles, see the channels listed here:
-
-https://www.cycles-renderer.org/development/
-
+For help building or running Ambience Suites Renderer, see [BUILDING.md](BUILDING.md) and the repository issue tracker.

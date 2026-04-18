@@ -1,5 +1,9 @@
 # Generic files to ignore
 .*
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
 .*.swp
 
 # Python cache
