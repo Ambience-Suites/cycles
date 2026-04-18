@@ -14,11 +14,9 @@ on:
     branches:
       - "main"
     paths-ignore:
-      - '**.md'
       - 'web/**'
   pull_request:
     paths-ignore:
-      - '**.md'
       - 'web/**'
   schedule:
     - cron: "45 3 */6 * *"
@@ -36,6 +34,51 @@ jobs:
           CI_ENABLE: ${{ secrets.CI_ENABLE }}
         run: echo "CI_ENABLE=${{ env.CI_ENABLE != '' }}" >> $GITHUB_OUTPUT
 
+  # ---------------------------------------------------------------------------
+  # Python lint, serial-box validation, and TV/EV unit tests
+  # (runs on every push/PR without the CI_ENABLE gate — lightweight, no libs)
+  # ---------------------------------------------------------------------------
+  Python-Checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install pyyaml pyflakes
+
+      - name: Lint Python sources (pyflakes)
+        run: |
+          pyflakes ambience_suites/ tools/serial_boxes/ tools/tvev/ \
+                   render_config.py src/cmake/make_format.py
+
+      - name: Validate render_config.py is importable
+        run: python render_config.py
+
+      - name: Run TV/EV unit tests
+        run: python -m pytest tools/tvev/test_scorer.py -v
+
+      - name: Generate serial boxes (smoke test)
+        run: |
+          python -m tools.serial_boxes.generator \
+            --animations-dir ./animations \
+            --render-config ./render_config.py \
+            --output-dir /tmp/serial_boxes_ci
+
+      - name: Validate generated serial boxes
+        run: |
+          python -m tools.serial_boxes.validator \
+            --boxes-dir /tmp/serial_boxes_ci \
+            --strict
+
+  # ---------------------------------------------------------------------------
+  # C++ build and test matrix
+  # ---------------------------------------------------------------------------
   Build:
     needs: [Setup]
     if: needs.Setup.outputs.CI_ENABLE == 'true'
@@ -85,3 +128,4 @@ jobs:
       - name: Test
         working-directory: cycles
         run: ${{ matrix.make }} test
+

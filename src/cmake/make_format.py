@@ -4,6 +4,7 @@
 
 import multiprocessing
 import os
+import shutil
 import sys
 import subprocess
 
@@ -17,13 +18,40 @@ ignore_files = {
     "src/render/sobol.cpp",  # Too heavy for clang-format
 }
 
+def _find_clang_format():
+    """Return the clang-format executable path.
+
+    Search order:
+    1. ``CLANG_FORMAT`` environment variable.
+    2. ``clang-format`` on PATH.
+    3. Versioned variants ``clang-format-18`` … ``clang-format-14``.
+    """
+    env_override = os.environ.get("CLANG_FORMAT")
+    if env_override:
+        return env_override
+
+    candidate = shutil.which("clang-format")
+    if candidate:
+        return candidate
+
+    for version in range(18, 13, -1):
+        candidate = shutil.which(f"clang-format-{version}")
+        if candidate:
+            return candidate
+
+    sys.stderr.write(
+        "clang-format not found. Install it or set the CLANG_FORMAT "
+        "environment variable to its full path.\n"
+    )
+    sys.exit(1)
+
 def source_files_from_git(paths):
     cmd = ("git", "ls-tree", "-r", "HEAD", *paths, "--name-only", "-z")
     files = subprocess.check_output(cmd).split(b'\0')
     return [f.decode('ascii') for f in files]
 
 def clang_format_file(files):
-    cmd = ["/home/brecht/dev/lib/linux_centos7_x86_64/llvm/bin/clang-format", "-i", "-verbose"] + files
+    cmd = [_find_clang_format(), "-i", "-verbose"] + files
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 
 def clang_print_output(output):

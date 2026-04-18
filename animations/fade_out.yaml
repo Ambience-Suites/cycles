@@ -1,0 +1,40 @@
+# Ambience Suites — Animation Definition
+# Content Data Serial Box source: content / animation
+#
+# fade_out — smooth opacity fade from 1 → 0 for broadcast outro sequences.
+
+name: fade_out
+version: "1.0.0"
+description: >
+  Broadcast-grade fade-out animation for Ambience Suites outro sequences.
+  Pairs with fade_in for seamless segment transitions.
+
+timing:
+  duration_ms: 600
+  easing: ease-in
+  fps: 30
+
+keyframes:
+  - frame: 0
+    opacity: 1.0
+    scale: 1.0
+  - frame: 8          # 44 % mark — begin fade
+    opacity: 0.80
+    scale: 1.0
+  - frame: 16         # 89 % mark
+    opacity: 0.20
+    scale: 0.99
+  - frame: 18         # 100 % — final
+    opacity: 0.0
+    scale: 0.98
+
+render_hints:
+  motion_blur: false
+  denoising: true
+  samples: 64
+
+tags:
+  - outro
+  - fade
+  - broadcast
+  - overlay-compatible

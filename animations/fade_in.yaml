@@ -1,0 +1,40 @@
+# Ambience Suites — Animation Definition
+# Content Data Serial Box source: content / animation
+#
+# fade_in — smooth opacity fade from 0 → 1 for broadcast intro sequences.
+
+name: fade_in
+version: "1.0.0"
+description: >
+  Broadcast-grade fade-in animation for Ambience Suites intro sequences.
+  Compatible with technical-analysis overlay transitions.
+
+timing:
+  duration_ms: 800
+  easing: ease-in-out
+  fps: 30
+
+keyframes:
+  - frame: 0
+    opacity: 0.0
+    scale: 0.98
+  - frame: 12        # 40 % mark — accelerate
+    opacity: 0.35
+    scale: 0.99
+  - frame: 24        # 80 % mark
+    opacity: 0.85
+    scale: 1.0
+  - frame: 30        # 100 % — final
+    opacity: 1.0
+    scale: 1.0
+
+render_hints:
+  motion_blur: false
+  denoising: true
+  samples: 64          # quick preview; override to 512 for broadcast delivery
+
+tags:
+  - intro
+  - fade
+  - broadcast
+  - overlay-compatible

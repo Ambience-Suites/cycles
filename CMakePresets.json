@@ -1,0 +1,111 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 10,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "release",
+      "displayName": "Release",
+      "description": "Optimised standalone release build (default).",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "WITH_CYCLES_STANDALONE": "ON",
+        "WITH_LIBS_PRECOMPILED": "ON"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "description": "Debug build with NaN detection enabled.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build_debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install_debug",
+        "WITH_CYCLES_STANDALONE": "ON",
+        "WITH_CYCLES_DEBUG": "ON",
+        "WITH_CYCLES_DEBUG_NAN": "ON",
+        "WITH_LIBS_PRECOMPILED": "ON"
+      }
+    },
+    {
+      "name": "hydra",
+      "displayName": "Hydra Render Delegate",
+      "description": "Build the Cycles Hydra render delegate with USD.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build_hydra",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "WITH_CYCLES_HYDRA_RENDER_DELEGATE": "ON",
+        "WITH_LIBS_PRECOMPILED": "ON"
+      }
+    },
+    {
+      "name": "tests",
+      "displayName": "Release + Tests",
+      "description": "Release build with Google Test suite enabled.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build_tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "WITH_CYCLES_STANDALONE": "ON",
+        "WITH_GTESTS": "ON",
+        "WITH_CYCLES_LOGGING": "ON",
+        "WITH_LIBS_PRECOMPILED": "ON"
+      }
+    },
+    {
+      "name": "native",
+      "displayName": "Native CPU Only",
+      "description": "Optimised build for the host CPU — faster iteration, not for distribution.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build_native",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "WITH_CYCLES_STANDALONE": "ON",
+        "WITH_CYCLES_NATIVE_ONLY": "ON",
+        "WITH_LIBS_PRECOMPILED": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "hydra",
+      "configurePreset": "hydra"
+    },
+    {
+      "name": "tests",
+      "configurePreset": "tests"
+    },
+    {
+      "name": "native",
+      "configurePreset": "native"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "tests",
+      "configurePreset": "tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
